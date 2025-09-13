@@ -1,0 +1,71 @@
+{% extends "playlist/base.html" %}
+{% block title %}Playlist Exporter{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card card-accent shadow-sm">
+      <div class="card-body">
+        <h4 class="card-title mb-3">Export YouTube Playlist</h4>
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            {{ form.playlist_url.label_tag }}
+            {{ form.playlist_url }}
+          </div>
+          <div class="mb-3">
+            {{ form.limit.label_tag }}
+            {{ form.limit }}
+            <div class="form-text">Optional: limit number of videos to fetch.</div>
+          </div>
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+              {{ form.non_field_errors }}
+            </div>
+          {% endif %}
+          <button class="btn btn-red">Fetch playlist</button>
+        </form>
+      </div>
+    </div>
+
+    {% if videos %}
+      <div class="mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h5>Results ({{ videos|length }} videos)</h5>
+          <a href="{% url 'playlist:download_csv' %}" class="btn btn-outline-danger">Download CSV</a>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-5">
+            <ul class="list-group">
+              {% for v in videos %}
+                <li class="list-group-item d-flex gap-3">
+                  <img src="{{ v.thumbnail }}" alt="" width="120" class="rounded">
+                  <div>
+                    <div class="fw-bold">{{ v.title }}</div>
+                    <a href="{{ v.url }}" target="_blank" class="small">Open on YouTube</a>
+                  </div>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+
+          <div class="col-lg-7">
+            <h6>Embedded preview</h6>
+            <div style="max-height:600px; overflow:auto;">
+              {% for v in videos %}
+                <div class="mb-3">
+                  <div class="small text-muted">{{ forloop.counter }} — {{ v.title }}</div>
+                  <div class="ratio ratio-16x9">
+                    <iframe src="{{ v.embed_url }}" title="{{ v.title }}" allowfullscreen></iframe>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

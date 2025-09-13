@@ -1,0 +1,4 @@
+Django>=4.2
+yt-dlp
+pandas
+gunicorn
